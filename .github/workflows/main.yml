@@ -5,6 +5,9 @@ on:
     - cron: '0 3 * * *' # Har roz subah 3:00 UTC par automatic run hoga
   workflow_dispatch: # Manual run ke liye
 
+permissions:
+  contents: write # GitHub Actions ko file commit/push karne ki permission dene ke liye
+
 jobs:
   run-ai-agents:
     runs-on: ubuntu-latest
@@ -36,11 +39,9 @@ jobs:
           prompt = '''You are the Autonomous AI CEO of Kalviora AI. Target: 3,000 paid users monthly (100 daily). Manage Social Media (Instagram, YouTube, TikTok, X, LinkedIn, Reddit), Sales, and Follow-ups with 100% free organic execution. Give today's detailed execution report in Hinglish.'''
           
           models = [
-              'gemini-3.8-flash',
-              'gemini-3.6-flash',
-              'gemini-3.5-flash-lite',
-              'gemini-3.1-flash-lite',
-              'gemini-2.0-flash'
+              'gemini-2.0-flash',
+              'gemini-1.5-flash',
+              'gemini-2.0-flash-lite'
           ]
           
           response_text = None
