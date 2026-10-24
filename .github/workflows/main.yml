@@ -3,7 +3,7 @@ name: Kalviora AI Autonomous Company 24/7
 on:
   schedule:
     - cron: '0 3 * * *' # Har roz subah 3:00 UTC par automatic run hoga
-  workflow_dispatch: # Aap chahein toh manually bhi run kar sakte hain
+  workflow_dispatch: # Manual run ke liye
 
 jobs:
   run-ai-agents:
@@ -28,20 +28,25 @@ jobs:
           python -c "
           import os
           from google import genai
-          from dotenv import load_dotenv
 
           client = genai.Client(api_key=os.environ.get('GEMINI_API_KEY'))
           print('🚀 GitHub Actions: AI CEO is executing daily multi-agent tasks...')
           
           prompt = '''You are the Autonomous AI CEO of Kalviora AI. Target: 3,000 paid users monthly (100 daily). Manage Social Media (Instagram, YouTube, TikTok, X, LinkedIn, Reddit), Sales, and Follow-ups with 100% free organic execution. Give today's detailed execution report in Hinglish.'''
           
-          response = client.models.generate_content(model='gemini-3.8-flash', contents=prompt)
+          response = client.models.generate_content(model='gemini-2.0-flash', contents=prompt)
           print(response.text)
           
           with open('ceo_daily_report.txt', 'w', encoding='utf-8') as f:
               f.write(response.text)
           print('✅ Report saved successfully!')
           "
+      
+      - name: Commit and Push Report back to repo
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Autonomous AI CEO: Daily Execution Report Generated"
+          file_pattern: ceo_daily_report.txt
       
       - name: Commit and Push Report back to repo
         uses: stefanzweifel/git-auto-commit-action@v5
