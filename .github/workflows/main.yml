@@ -2,11 +2,11 @@ name: Kalviora AI Autonomous Company 24/7
 
 on:
   schedule:
-    - cron: '0 3 * * *' # Har roz subah 3:00 UTC par automatic run hoga
-  workflow_dispatch: # Manual run ke liye
+    - cron: '0 3 * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write # GitHub Actions ko file commit/push karne ki permission dene ke liye
+  contents: write
 
 jobs:
   run-ai-agents:
@@ -30,37 +30,44 @@ jobs:
         run: |
           python -c "
           import os
+          import traceback
           from google import genai
 
-          api_key = os.environ.get('GEMINI_API_KEY')
-          client = genai.Client(api_key=api_key)
-          print('🚀 GitHub Actions: AI CEO is executing daily multi-agent tasks...')
-          
-          prompt = '''You are the Autonomous AI CEO of Kalviora AI. Target: 3,000 paid users monthly (100 daily). Manage Social Media (Instagram, YouTube, TikTok, X, LinkedIn, Reddit), Sales, and Follow-ups with 100% free organic execution. Give today's detailed execution report in Hinglish.'''
-          
-          models = [
-              'gemini-2.0-flash',
-              'gemini-1.5-flash',
-              'gemini-2.0-flash-lite'
-          ]
-          
-          response_text = None
-          for model_name in models:
-              try:
-                  print(f'Trying model: {model_name}...')
-                  response = client.models.generate_content(model=model_name, contents=prompt)
-                  response_text = response.text
-                  print(f'✅ Successfully generated report using {model_name}!')
-                  break
-              except Exception as e:
-                  print(f'❌ Failed with {model_name}: {e}')
+          try:
+              api_key = os.environ.get('GEMINI_API_KEY')
+              print(f'API Key loaded: {bool(api_key)}')
+              client = genai.Client(api_key=api_key)
+              print('🚀 GitHub Actions: AI CEO is executing daily multi-agent tasks...')
+              
+              prompt = '''You are the Autonomous AI CEO of Kalviora AI. Target: 3,000 paid users monthly (100 daily). Manage Social Media (Instagram, YouTube, TikTok, X, LinkedIn, Reddit), Sales, and Follow-ups with 100% free organic execution. Give today's detailed execution report in Hinglish.'''
+              
+              models = [
+                  'gemini-2.0-flash',
+                  'gemini-1.5-flash',
+                  'gemini-2.0-flash-lite'
+              ]
+              
+              response_text = None
+              for model_name in models:
+                  try:
+                      print(f'Trying model: {model_name}...')
+                      response = client.models.generate_content(model=model_name, contents=prompt)
+                      response_text = response.text
+                      print(f'✅ Successfully generated report using {model_name}!')
+                      break
+                  except Exception as e:
+                      print(f'❌ Failed with {model_name}: {e}')
 
-          if response_text:
-              with open('ceo_daily_report.txt', 'w', encoding='utf-8') as f:
-                  f.write(response_text)
-              print('✅ Report saved successfully!')
-          else:
-              raise Exception('All models failed to generate content.')
+              if response_text:
+                  with open('ceo_daily_report.txt', 'w', encoding='utf-8') as f:
+                      f.write(response_text)
+                  print('✅ Report saved successfully!')
+              else:
+                  raise Exception('All models failed to generate content.')
+          except Exception as e:
+              print('💥 CRITICAL ERROR DETAILS:')
+              traceback.print_exc()
+              exit(1)
           "
       
       - name: Commit and Push Report back to repo
